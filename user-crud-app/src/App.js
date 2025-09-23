@@ -66,11 +66,17 @@ export default function App() {
     }
 
     data.sort((a, b) => {
-      const aVal = a[sortKey] ? a[sortKey].toString().toLowerCase() : "";
-      const bVal = b[sortKey] ? b[sortKey].toString().toLowerCase() : "";
-      if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
-      return 0;
+      if (sortKey === "id") {
+        const aId = Number(a.id) || 0;
+        const bId = Number(b.id) || 0;
+        return sortOrder === "asc" ? aId - bId : bId - aId;
+      } else {
+        const aVal = a[sortKey] ? a[sortKey].toString().toLowerCase() : "";
+        const bVal = b[sortKey] ? b[sortKey].toString().toLowerCase() : "";
+        if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+      }
     });
 
     setFilteredUsers(data);
@@ -79,9 +85,15 @@ export default function App() {
 
   const handleAddUser = async (user) => {
     try {
-      const res = await axios.post("https://jsonplaceholder.typicode.com/users", user);
-      setUsers([...users, { ...user, id: res.data.id || Date.now() }]);
+      // Generate next continuous numeric ID
+      const maxId = users.length > 0 ? Math.max(...users.map(u => Number(u.id) || 0)) : 0;
+      const newUser = { ...user, id: maxId + 1 };
+      const updatedUsers = [...users, newUser];
+      setUsers(updatedUsers);
+      setFilteredUsers(updatedUsers);
+      setPage(1);
       setShowForm(false);
+      setEditUser(null);
     } catch {
       setError("Failed to add user.");
     }
@@ -89,8 +101,10 @@ export default function App() {
 
   const handleEditUser = async (user) => {
     try {
-      await axios.put(`https://jsonplaceholder.typicode.com/users/${user.id}`, user);
-      setUsers(users.map((u) => (u.id === user.id ? user : u)));
+      // Simulate API call: update user locally
+      const updatedUsers = users.map((u) => (u.id === user.id ? user : u));
+      setUsers(updatedUsers);
+      setFilteredUsers(updatedUsers);
       setShowForm(false);
       setEditUser(null);
     } catch {
@@ -100,7 +114,7 @@ export default function App() {
 
   const handleDeleteUser = async (id) => {
     try {
-      await axios.delete(`https://jsonplaceholder.typicode.com/users/${id}`);
+      // Simulate API call
       setUsers(users.filter((u) => u.id !== id));
     } catch {
       setError("Failed to delete user.");
@@ -116,7 +130,7 @@ export default function App() {
 
       {error && <ErrorMessage message={error} />}
 
-      <div className="flex justify-between mb-4">
+      <div className="flex flex-col sm:flex-row justify-between mb-4 gap-2">
         <input
           type="text"
           placeholder="Search by name or email..."
@@ -124,7 +138,7 @@ export default function App() {
           onChange={(e) => setSearch(e.target.value)}
           className="border px-2 py-1 rounded w-full sm:w-1/3 mb-2 sm:mb-0"
         />
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-0">
+        <div className="flex flex-row gap-2">
           <button
             onClick={() => setShowForm(true)}
             className="bg-blue-500 text-white px-4 py-2 rounded sm:mr-2 w-full sm:w-auto"
@@ -136,6 +150,15 @@ export default function App() {
             className="bg-gray-500 text-white px-4 py-2 rounded w-full sm:w-auto"
           >
             Filters
+          </button>
+          <button
+            onClick={() => {
+              setFilteredUsers(users);
+              setPage(1);
+            }}
+            className="bg-red-500 text-white px-4 py-2 rounded w-full sm:w-auto"
+          >
+            Clear Filters
           </button>
         </div>
       </div>
@@ -163,7 +186,7 @@ export default function App() {
 
       {showForm && (
         <UserForm
-          user={editUser}
+          initialData={editUser}
           onSubmit={editUser ? handleEditUser : handleAddUser}
           onCancel={() => {
             setShowForm(false);
@@ -205,6 +228,7 @@ export default function App() {
               );
             }
             setFilteredUsers(data);
+            setPage(1);
             setShowFilters(false);
           }}
           onClose={() => setShowFilters(false)}
