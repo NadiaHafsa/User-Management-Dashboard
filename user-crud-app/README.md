@@ -49,7 +49,7 @@ npm run preview
 
 🌍 Deployed Link
 
-👉 Live Demo Here
+ https://nadiahafsa.github.io/User-Management-Dashboard/
 
 
 
