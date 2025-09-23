@@ -1,4 +1,4 @@
-Project Overview
+**Project Overview**
 
 This project is a React-based User Management Dashboard that interacts with the JSONPlaceholder API
  to fetch, display, and manage users.
@@ -21,8 +21,8 @@ Support for local users (users added manually are managed locally without API ca
 
 Clone the Repository
 
-git clone https://github.com/<your-username>/<your-repo>.git
-cd <your-repo>
+git clone https://github.com/NadiaHafsa/User-Management-Dashboard.git
+cd User-Management-Dashboard
 
 
 Install Dependencies
@@ -51,7 +51,7 @@ npm run preview
 
 👉 Live Demo Here
 
-(Replace with your Vercel/Netlify/GitHub Pages deployed link — this is mandatory for submission)
+
 
 📝 Reflections
 🔹 What Went Well
