@@ -36,8 +36,8 @@ Start Development Server
 npm run dev
 
 
-This starts the app on http://localhost:5173
- (if using Vite).
+This starts the app on http://localhost:3000
+
 
 ▶️ Run Instructions
 Development Mode
